@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "794645808744",
+    "project_id": "court-booking-app-9d279",
+    "storage_bucket": "court-booking-app-9d279.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:794645808744:android:710d5ccbc12d1d1fa21ddd",
+        "android_client_info": {
+          "package_name": "com.example.court_booking_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOleYQ7JgWUqcjNb9wMmWSH8tS6lKc46w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
