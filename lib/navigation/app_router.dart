@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'package:court_booking_app/screens/welcome_screen.dart';
 import 'package:court_booking_app/screens/login_screen.dart';
 import 'package:court_booking_app/screens/register_screen.dart';
 import 'package:court_booking_app/screens/main_shell.dart';
@@ -13,7 +12,7 @@ class AppRouter {
   // ---------------------------
 
   static void goHomeTab([int index = 0]) {
-    MainShell.shellKey.currentState?.switchTab(index);
+    MainShell.tabs.switchTab(index);
   }
 
   static Future<T?> push<T>(BuildContext context, Widget page) {
@@ -46,7 +45,7 @@ class AppRouter {
   // ---------------------------
 
   static void goWelcome(BuildContext context) {
-    clearAndPush(context, const WelcomeScreen());
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   static Future<void> goLogin(BuildContext context) {
@@ -58,7 +57,8 @@ class AppRouter {
   }
 
   static void goHomeClear(BuildContext context) {
-    clearAndPush(context, MainShell(key: MainShell.shellKey));
+    MainShell.tabs.switchTab(0);
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   // ---------------------------
@@ -80,7 +80,7 @@ class AppRouter {
       goWelcome(context);
       return;
     }
-    MainShell.shellKey.currentState?.switchTab(1);
+    MainShell.tabs.switchTab(1);
   }
 
   // ✅ TAB: Profile (index 3) → push YOK
@@ -89,6 +89,6 @@ class AppRouter {
       goWelcome(context);
       return;
     }
-    MainShell.shellKey.currentState?.switchTab(3);
+    MainShell.tabs.switchTab(3);
   }
 }

@@ -1,24 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'welcome_screen.dart';
 import 'package:court_booking_app/features/home/presentation/home_screen.dart';
 import 'courts_screen.dart';
 import 'events_screen.dart';
 import 'profile_screen.dart';
 import 'live_map_screen.dart';
 
+class MainShellTabs extends ChangeNotifier {
+  int _requestedIndex = 0;
+
+  int get requestedIndex => _requestedIndex;
+
+  void switchTab(int index) {
+    _requestedIndex = index;
+    notifyListeners();
+  }
+}
+
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
 
-  // ✅ private type yok: MainShellState
-  static final GlobalKey<MainShellState> shellKey = GlobalKey<MainShellState>();
+  static final tabs = MainShellTabs();
 
   @override
   State<MainShell> createState() => MainShellState();
 }
 
-// ✅ underscore yok artık
 class MainShellState extends State<MainShell> {
   int _currentIndex = 0;
 
@@ -30,8 +38,25 @@ class MainShellState extends State<MainShell> {
     ProfileScreen(),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    MainShell.tabs.addListener(_handleExternalTabRequest);
+  }
+
+  @override
+  void dispose() {
+    MainShell.tabs.removeListener(_handleExternalTabRequest);
+    super.dispose();
+  }
+
+  void _handleExternalTabRequest() {
+    switchTab(MainShell.tabs.requestedIndex);
+  }
+
   void switchTab(int index) {
     if (!mounted) return;
+    if (_currentIndex == index) return;
     setState(() => _currentIndex = index);
   }
 
@@ -41,10 +66,7 @@ class MainShellState extends State<MainShell> {
     final user = FirebaseAuth.instance.currentUser;
 
     if (_tabNeedsAuth(index) && user == null) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const WelcomeScreen()),
-        (route) => false,
-      );
+      Navigator.of(context).popUntil((route) => route.isFirst);
       return;
     }
 

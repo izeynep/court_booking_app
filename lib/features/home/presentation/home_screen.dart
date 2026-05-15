@@ -2,14 +2,56 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:court_booking_app/navigation/app_router.dart';
+import 'package:court_booking_app/features/assistant/presentation/assistant_companion_card.dart';
+import 'package:court_booking_app/features/assistant/presentation/assistant_chat_sheet.dart';
+import 'package:court_booking_app/features/assistant/presentation/assistant_mascot.dart';
 import 'package:court_booking_app/shared/widgets/primary_cta.dart';
-import 'package:court_booking_app/features/home/widgets/home_header.dart';
 import 'package:court_booking_app/features/home/widgets/next_booking_section.dart';
 import 'package:court_booking_app/features/home/widgets/live_club_section.dart';
 import 'package:court_booking_app/features/home/widgets/coming_up_section.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  bool _isAssistantSheetOpen = false;
+
+  void _openAssistant() {
+    if (_isAssistantSheetOpen) return;
+
+    FocusManager.instance.primaryFocus?.unfocus();
+    _isAssistantSheetOpen = true;
+
+    _showAssistantSheet();
+  }
+
+  Future<void> _showAssistantSheet() async {
+    if (!mounted) {
+      _isAssistantSheetOpen = false;
+      return;
+    }
+
+    try {
+      await showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        useSafeArea: true,
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        builder: (_) => const AssistantChatSheet(),
+      );
+    } finally {
+      if (mounted) {
+        _isAssistantSheetOpen = false;
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +95,7 @@ class HomeScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
         children: [
-          const HomeHeader(),
+          _MascotHeroSection(onTap: _openAssistant),
           const SizedBox(height: 20),
 
           if (uid == null)
@@ -75,6 +117,29 @@ class HomeScreen extends StatelessWidget {
           const ComingUpSection(),
         ],
       ),
+    );
+  }
+}
+
+class _MascotHeroSection extends StatelessWidget {
+  const _MascotHeroSection({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        AssistantMascot(
+          size: const Size(120, 120),
+          onTap: onTap,
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: AssistantCompanionCard(onChatTap: onTap),
+        ),
+      ],
     );
   }
 }

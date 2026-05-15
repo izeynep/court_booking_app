@@ -203,6 +203,7 @@ class _CourtsScreenState extends State<CourtsScreen> {
         const SnackBar(content: Text('Rezervasyon kaydedildi ✅')),
       );
       setState(() => selectedTime = null);
+      _bookingRepo.forceRefresh();
       AppRouter.goHomeTab(0);
       return true;
     } catch (e) {

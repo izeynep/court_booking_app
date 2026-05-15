@@ -29,13 +29,28 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class AuthGate extends StatelessWidget {
+class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
+
+  @override
+  State<AuthGate> createState() => _AuthGateState();
+}
+
+class _AuthGateState extends State<AuthGate> {
+  late final Stream<User?> _authStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _authStream = FirebaseAuth.instance.authStateChanges().distinct(
+      (previous, next) => previous?.uid == next?.uid,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(),
+      stream: _authStream,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const _SplashLoading();
@@ -46,7 +61,7 @@ class AuthGate extends StatelessWidget {
         if (user == null) {
           return const WelcomeScreen();
         }
-        return MainShell(key: MainShell.shellKey);
+        return const MainShell();
       },
     );
   }
